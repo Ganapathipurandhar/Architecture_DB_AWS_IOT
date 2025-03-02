@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x]
 
     steps:
     - name: Checkout repository
@@ -33,6 +33,7 @@ jobs:
     - name: Install Ngrok
       run: |
         npm install -g ngrok
+        ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
     - name: Start the project and expose it with Ngrok
       run: |
