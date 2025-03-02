@@ -1,0 +1,49 @@
+name: Node.js CI with Ngrok
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Ensures full repo is checked out
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies (without accidental publish)
+      run: |
+        npm install --ignore-scripts  # Prevents unintended publish
+
+    - name: Install Ngrok
+      run: |
+        npm install -g ngrok
+        
+
+    - name: Start the project and expose it with Ngrok
+      run: |
+       
+        npm run dev &  # Run your app in the background
+        sleep 5  # Wait for the server to start
+        ngrok http 3000 > ngrok.log &  # Replace 3000 with your app's port
+        sleep 10  # Wait for Ngrok to initialize
+
+    - name: Get Ngrok URL
+      run: |
+        cat ngrok.log | grep -o 'https://[a-z0-9]*\.ngrok.io' > ngrok_url.txt
+        echo "Ngrok URL: $(cat ngrok_url.txt)"
