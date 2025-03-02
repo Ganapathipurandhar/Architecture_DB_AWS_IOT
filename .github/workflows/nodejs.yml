@@ -37,7 +37,7 @@ jobs:
 
     - name: Start the project and expose it with Ngrok
       run: |
-        ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+       
         npm run dev &  # Run your app in the background
         sleep 5  # Wait for the server to start
         ngrok http 3000 > ngrok.log &  # Replace 3000 with your app's port
